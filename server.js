@@ -1,4 +1,5 @@
 require('dotenv').config(); // Load environment variables
+const cors = require('cors'); 
 const viewDetailsRouter = require('./src/routes/viewdetails');
 
 const adminLoginRouter = require('./src/routes/adminLogin');
@@ -10,6 +11,12 @@ const loginRouter = require('./src/routes/login');
 
 const app = express();
 const PORT = process.env.PORT || 7333;
+
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow requests only from your frontend
+  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+  allowedHeaders: 'Content-Type,Authorization'
+}));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {

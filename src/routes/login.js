@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 // JWT Secret (should be in environment variables in production)
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+const JWT_SECRET = process.env.JWT_SECRET || 'rec';
 
 /**
  * User login endpoint
@@ -39,6 +39,13 @@ router.post('/', async (req, res) => {
     
     // Verify MPIN
     const isMatch = await user.compareMpin(mpin);
+    const isActive = user.isactive;
+    if (!isActive) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'User account is inactive' 
+      });
+    }
     if (!isMatch) {
       return res.status(401).json({ 
         success: false, 

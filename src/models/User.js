@@ -2,9 +2,14 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Name is required"],
+    trim: true
+  },
   mobileNumber: {
     type: String,
-    required: true,
+    required: [true, "Mobile number is required"],
     unique: true,
     trim: true,
     validate: {
@@ -16,19 +21,11 @@ const userSchema = new mongoose.Schema({
   },
   mpin: {
     type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  expirydate: {
-    type: Date,
-    required: true
+    required: [true, "MPIN is required"]
   },
   aadharnumber: {
     type: String,
-    required: true,
+    required: [true, "Aadhar number is required"],
     unique: true,
     validate: {
       validator: function(v) {
@@ -37,12 +34,19 @@ const userSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid 12-digit Aadhar number!`
     }
   },
+  expirydate: {
+    type: Date,
+    required: [true, "Expiry date is required"]
+  },
   address: {
-    type: String
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    pincode: { type: String, required: true }
   },
   isactive: {
     type: Boolean,
-    default: true
+    default: false
   },
   totalbottles: {
     type: Number,
@@ -52,13 +56,17 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  createdAt: {
+  weight: {
+    type: Number,
+    default: 0
+  },
+  dob: {
     type: Date,
-    default: Date.now
+    required: false // Can be optional
   }
-});
+}, { timestamps: true }); // Automatically adds createdAt & updatedAt
 
-// Pre-save hook to hash MPIN
+// **Pre-save Hook to Hash MPIN**
 userSchema.pre('save', async function(next) {
   if (this.isModified('mpin')) {
     this.mpin = await bcrypt.hash(this.mpin, 10);
@@ -66,7 +74,7 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-// Method to compare MPIN
+// **Method to Compare MPIN**
 userSchema.methods.compareMpin = async function(candidateMpin) {
   return bcrypt.compare(candidateMpin, this.mpin);
 };
