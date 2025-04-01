@@ -51,7 +51,7 @@ router.get('/:cardNumber', async (req, res) => {
         isactive: user.isactive,
         totalbottles: user.totalbottles,
         remainingbottles: user.remainingbottles,
-      healthRecommendation: getHealthRecommendation(user.totalbottles),
+       healthRecommendation: getHealthRecommendation(user.totalbottles),
         createdAt: user.createdAt
       }
     });
